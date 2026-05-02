@@ -24,6 +24,7 @@ AGriculture.pdf
 *.jpg
 *.png
 !LandingPage.png
+!static/images/favicon.png
 
 # IDEs
 .vscode/
