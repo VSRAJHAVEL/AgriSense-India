@@ -12,10 +12,12 @@ AgriSense India is an AI-powered agricultural intelligence platform designed to 
 
 ## Technology Stack
 
-*   **Backend**: Python, Flask, Gunicorn
-*   **Machine Learning / AI**: TensorFlow (MobileNetV2), scikit-learn (Random Forest)
-*   **Data Processing**: NumPy, Pandas, Pillow
-*   **Frontend**: HTML5, Vanilla CSS3 (Glassmorphism design system), Vanilla JavaScript
+*   **Core Backend**: Python 3.12, Flask, Gunicorn
+*   **Computer Vision (Soil Classification)**: TensorFlow 2, Keras, CNN Architecture: **MobileNetV2** (Fine-tuned for Indian soil datasets)
+*   **Machine Learning (Crop Recommendation)**: scikit-learn, Ensemble Method: **Random Forest Classifier**
+*   **Data Processing & Engineering**: NumPy, Pandas, Joblib, Pillow (PIL)
+*   **Frontend Architecture**: HTML5, Vanilla JavaScript, Custom CSS3 (Premium Glassmorphism UI)
+*   **Deployment & Cloud**: Render (PaaS), Git
 
 ## Project Structure
 
