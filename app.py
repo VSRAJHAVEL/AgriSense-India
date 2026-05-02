@@ -276,6 +276,9 @@ def all_crops_api():
     return jsonify({"error": "No crop data"}), 404
 
 # ─── Main ───────────────────────────────────────────────────────
+# Load models immediately so they are available when running via Gunicorn
+load_models()
+
 if __name__ == "__main__":
-    load_models()
     app.run(debug=True, host="0.0.0.0", port=5000)
+
