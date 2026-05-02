@@ -1,0 +1,33 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Project specific
+Dataset/
+TamilNadu_Agriculture_Dataset/
+*.csv
+*.xls
+archive*/
+AGriculture.pdf
+*.jpg
+*.png
+!LandingPage.png
+
+# IDEs
+.vscode/
+.idea/
+
+# Logs
+*.log

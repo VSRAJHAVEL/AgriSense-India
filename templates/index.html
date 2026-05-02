@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSense India - Crop Recommendation System</title>
+    <meta name="description" content="AI-powered crop recommendation system for Indian farmers. Upload soil image to get crop suggestions with market prices, yield data, and growing details.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="bg-pattern">
+        <div class="blob1"></div>
+        <div class="blob2"></div>
+        <div class="blob3"></div>
+    </div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div>
+                    <h1 class="logo-text">AgriSense India</h1>
+                    <p class="logo-sub">Smart Agricultural Intelligence</p>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="#upload" class="nav-link active">Analyze Soil</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+                <a href="#about" class="nav-link">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section — Full Screen Premium -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-top-row">
+                <div class="hero-left">
+                    <div class="hero-badge">AI-Powered Agricultural Intelligence</div>
+                    <h2 class="hero-title">
+                        Transforming<br>
+                        <span class="gradient-text">Indian Agriculture</span><br>
+                        with AI
+                    </h2>
+                    <p class="hero-desc">
+                        Upload a soil image. Our AI identifies the soil type and recommends 
+                        the best crops — with MSP prices, yield data, water needs, and 
+                        complete growing details for Indian farmers.
+                    </p>
+                    <div class="hero-cta">
+                        <a href="#upload" class="cta-btn primary">Analyze Your Soil</a>
+                        <a href="#how-it-works" class="cta-btn secondary">Learn More</a>
+                    </div>
+                </div>
+                <div class="hero-right">
+                    <div class="hero-glass-card">
+                        <div class="glass-card-inner">
+                            <div class="glass-stat-row">
+                                <div class="glass-stat">
+                                    <span class="glass-stat-num">18</span>
+                                    <span class="glass-stat-label">Indian Crops</span>
+                                </div>
+                                <div class="glass-stat-divider"></div>
+                                <div class="glass-stat">
+                                    <span class="glass-stat-num">5</span>
+                                    <span class="glass-stat-label">Soil Types</span>
+                                </div>
+                            </div>
+                            <div class="glass-stat-row">
+                                <div class="glass-stat">
+                                    <span class="glass-stat-num">MSP</span>
+                                    <span class="glass-stat-label">Live Prices</span>
+                                </div>
+                                <div class="glass-stat-divider"></div>
+                                <div class="glass-stat">
+                                    <span class="glass-stat-num">96%</span>
+                                    <span class="glass-stat-label">AI Accuracy</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-card-footer">
+                            <div class="glass-tag">MobileNetV2 CNN</div>
+                            <div class="glass-tag">Random Forest ML</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Strip -->
+    <section class="features-strip">
+        <div class="feature-item">
+            <span class="feature-dot"></span>
+            <span>Soil Classification</span>
+        </div>
+        <div class="feature-item">
+            <span class="feature-dot"></span>
+            <span>Crop Recommendations</span>
+        </div>
+        <div class="feature-item">
+            <span class="feature-dot"></span>
+            <span>Market Prices</span>
+        </div>
+        <div class="feature-item">
+            <span class="feature-dot"></span>
+            <span>Yield Analysis</span>
+        </div>
+        <div class="feature-item">
+            <span class="feature-dot"></span>
+            <span>NPK Requirements</span>
+        </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section id="upload" class="upload-section">
+        <h2 class="section-title">Analyze Your Soil</h2>
+        <p class="section-desc">Upload a soil image or use your camera to capture one</p>
+        
+        <div class="upload-container">
+            <form id="uploadForm" action="/predict" method="POST" enctype="multipart/form-data">
+                <div class="tab-switcher">
+                    <button type="button" class="tab-btn active" data-tab="file">
+                        Upload File
+                    </button>
+                    <button type="button" class="tab-btn" data-tab="camera">
+                        Use Camera
+                    </button>
+                </div>
+
+                <div id="fileTab" class="tab-content active">
+                    <div id="dropZone" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <div class="upload-icon">+</div>
+                            <h3>Drop your soil image here</h3>
+                            <p>or click to browse files</p>
+                            <span class="file-types">Supports: JPG, PNG, WEBP, BMP (Max 16MB)</span>
+                        </div>
+                        <input type="file" id="fileInput" name="soil_image" accept="image/*" hidden>
+                    </div>
+                </div>
+
+                <div id="cameraTab" class="tab-content">
+                    <div class="camera-container">
+                        <video id="cameraPreview" autoplay playsinline></video>
+                        <canvas id="cameraCanvas" hidden></canvas>
+                        <div class="camera-controls">
+                            <button type="button" id="startCamera" class="cam-btn">
+                                Start Camera
+                            </button>
+                            <button type="button" id="captureBtn" class="cam-btn capture" hidden>
+                                Capture
+                            </button>
+                            <button type="button" id="retakeBtn" class="cam-btn" hidden>
+                                Retake
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="imagePreview" class="image-preview" hidden>
+                    <img id="previewImg" alt="Soil image preview">
+                    <button type="button" id="removeImage" class="remove-btn">X</button>
+                </div>
+
+                <button type="submit" id="submitBtn" class="submit-btn" disabled>
+                    <span class="btn-text">Analyze Soil & Get Recommendations</span>
+                    <div class="btn-loader" hidden>
+                        <div class="spinner"></div>
+                        <span>Analyzing...</span>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-section">
+        <h2 class="section-title">How It Works</h2>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-num">01</div>
+                <div class="step-icon">CAPTURE</div>
+                <h3>Capture Soil Image</h3>
+                <p>Take a clear photo of your soil sample or upload an existing image</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">02</div>
+                <div class="step-icon">ANALYZE</div>
+                <h3>AI Analysis</h3>
+                <p>Our CNN model identifies soil type — Alluvial, Black, Clay, Loamy, or Red</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">03</div>
+                <div class="step-icon">RECOMMEND</div>
+                <h3>Crop Recommendation</h3>
+                <p>ML model suggests best crops with prices, yield, and growing details</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">04</div>
+                <div class="step-icon">PROFIT</div>
+                <h3>Market Intelligence</h3>
+                <p>Get current MSP prices, market rates, and profit potential for each crop</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="about-content">
+            <h2 class="section-title">About This System</h2>
+            <p>Built for <strong>Indian farmers</strong>, this system uses AI and machine learning 
+            to analyze soil images and recommend the most suitable crops. Crop data is sourced from 
+            <strong>ICAR, State Agricultural Universities</strong> and <strong>Government of India</strong> 
+            agricultural statistics.</p>
+            <div class="source-badges">
+                <span class="badge">ICAR / SAU Data</span>
+                <span class="badge">Govt of India Statistics</span>
+                <span class="badge">MobileNetV2 CNN</span>
+                <span class="badge">Random Forest ML</span>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-info-box">
+            <p class="footer-title">AgriSense India — Crop Recommendation System</p>
+            <p class="footer-sub">Data sourced from ICAR, State Agricultural Universities & Government of India Reports</p>
+        </div>
+        
+        <div class="developer-profile">
+            <h4><span style="color:var(--w50);font-size:0.85rem;font-weight:600;letter-spacing:0.5px;">Developed by</span><br>Rajhavel V S</h4>
+            <p>Computer Science (AI & ML) Scholar at Karunya Institute of Technology and Sciences. President of ACM Student Chapter and AI Researcher focusing on impactful machine learning applications in healthcare and agriculture.</p>
+            <a href="https://www.linkedin.com/in/rajhavelvs/" target="_blank" rel="noopener noreferrer" class="dev-link">Connect on LinkedIn</a>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

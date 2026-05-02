@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soil Analysis Results | AgriSense India</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="bg-pattern">
+        <div class="blob1"></div>
+        <div class="blob2"></div>
+        <div class="blob3"></div>
+    </div>
+    
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div>
+                    <h1 class="logo-text">AgriSense India</h1>
+                    <p class="logo-sub">Smart Agricultural Intelligence</p>
+                </div>
+            </a>
+            <a href="/" class="back-btn">New Analysis</a>
+        </div>
+    </header>
+
+    <main class="results-main">
+        <div class="results-header">
+            <h2 class="results-title">Soil Analysis Complete</h2>
+            <p class="results-time">Analyzed on {{ timestamp }}</p>
+        </div>
+
+        <!-- Soil Analysis Card -->
+        <section class="soil-analysis-section">
+            <div class="soil-card">
+                <div class="soil-card-left">
+                    <img src="{{ url_for('static', filename=image_path) }}" alt="Uploaded soil image" class="soil-image">
+                </div>
+                <div class="soil-card-right">
+                    <div class="soil-type-badge" style="background: {{ soil_color }}15; border-color: {{ soil_color }}">
+                        <span class="soil-dot" style="background: {{ soil_color }}"></span>
+                        {{ soil_display }}
+                    </div>
+                    <div class="confidence-bar-container">
+                        <div class="confidence-label">
+                            <span>AI Confidence</span>
+                            <span class="confidence-value">{{ confidence }}%</span>
+                        </div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: {{ confidence }}%"></div>
+                        </div>
+                    </div>
+                    <p class="soil-desc">{{ soil_description }}</p>
+                    <div class="soil-regions">
+                        <strong>Found in:</strong> {{ soil_regions }}
+                    </div>
+                    
+                    <div class="all-predictions">
+                        <h4>Classification Breakdown</h4>
+                        {% for soil_name, prob in all_predictions.items() | sort(attribute='1', reverse=true) %}
+                        <div class="pred-row">
+                            <span class="pred-name">{{ soil_name }}</span>
+                            <div class="pred-bar-bg">
+                                <div class="pred-bar-fill" style="width: {{ prob }}%"></div>
+                            </div>
+                            <span class="pred-pct">{{ prob }}%</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Soil Properties -->
+        <section class="soil-props-section">
+            <h3 class="sub-title">Soil Properties (Estimated Ranges)</h3>
+            <div class="props-grid">
+                <div class="prop-card">
+                    <div class="prop-icon">N</div>
+                    <div class="prop-label">Nitrogen</div>
+                    <div class="prop-value">{{ soil_props.N_range[0] }} - {{ soil_props.N_range[1] }} kg/ha</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-icon">P</div>
+                    <div class="prop-label">Phosphorus</div>
+                    <div class="prop-value">{{ soil_props.P_range[0] }} - {{ soil_props.P_range[1] }} kg/ha</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-icon">K</div>
+                    <div class="prop-label">Potassium</div>
+                    <div class="prop-value">{{ soil_props.K_range[0] }} - {{ soil_props.K_range[1] }} kg/ha</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-icon">pH</div>
+                    <div class="prop-label">pH Level</div>
+                    <div class="prop-value">{{ soil_props.ph_range[0] }} - {{ soil_props.ph_range[1] }}</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-icon">TEMP</div>
+                    <div class="prop-label">Temperature</div>
+                    <div class="prop-value">{{ soil_props.temp_range[0] }} - {{ soil_props.temp_range[1] }}°C</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-icon">RAIN</div>
+                    <div class="prop-label">Rainfall</div>
+                    <div class="prop-value">{{ soil_props.rainfall_range[0] }} - {{ soil_props.rainfall_range[1] }} mm</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Crop Recommendations -->
+        <section class="recommendations-section">
+            <h3 class="sub-title">Recommended Crops for Your Soil</h3>
+            <p class="section-desc">Ranked by suitability for {{ soil_display }}</p>
+            
+            <div class="crops-grid">
+                {% for crop in recommendations %}
+                <div class="crop-card" style="animation-delay: {{ loop.index * 0.1 }}s">
+                    <div class="crop-header">
+                        <div class="crop-icon">{{ loop.index }}</div>
+                        <div>
+                            <h4 class="crop-name">{{ crop.details.get('name', crop.name) }}</h4>
+                        </div>
+                        <div class="suitability-badge {% if crop.suitability > 60 %}high{% elif crop.suitability > 30 %}medium{% else %}low{% endif %}">
+                            {{ crop.suitability }}%
+                        </div>
+                    </div>
+                    
+                    <p class="crop-desc">{{ crop.details.get('description', '') }}</p>
+                    
+                    <!-- Price Info -->
+                    <div class="crop-price-section">
+                        <h5>Market Price (per Quintal)</h5>
+                        <div class="price-grid">
+                            {% if crop.details.get('msp_price', 0) > 0 %}
+                            <div class="price-item msp">
+                                <span class="price-label">MSP</span>
+                                <span class="price-value highlight">&#8377;{{ crop.details.msp_price }}/qtl</span>
+                            </div>
+                            {% endif %}
+                            <div class="price-item">
+                                <span class="price-label">Market Min</span>
+                                <span class="price-value">&#8377;{{ crop.details.get('market_price_min', 'N/A') }}/qtl</span>
+                            </div>
+                            <div class="price-item">
+                                <span class="price-label">Market Max</span>
+                                <span class="price-value highlight">&#8377;{{ crop.details.get('market_price_max', 'N/A') }}/qtl</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Details Grid -->
+                    <div class="crop-details-grid">
+                        <div class="detail-item">
+                            <span class="detail-icon">YIELD</span>
+                            <span class="detail-label">Per Hectare</span>
+                            <span class="detail-value">{{ crop.details.get('yield_per_hectare', 'N/A') }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">WATER</span>
+                            <span class="detail-label">Requirement</span>
+                            <span class="detail-value">{{ crop.details.get('water_requirement', 'N/A') }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">RAIN</span>
+                            <span class="detail-label">Rainfall Needed</span>
+                            <span class="detail-value">{{ crop.details.get('rainfall_needed', 'N/A') }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">TEMP</span>
+                            <span class="detail-label">Temperature</span>
+                            <span class="detail-value">{{ crop.details.get('temperature_min', '') }}°C - {{ crop.details.get('temperature_max', '') }}°C</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">HUMID</span>
+                            <span class="detail-label">Humidity</span>
+                            <span class="detail-value">{{ crop.details.get('humidity_range', 'N/A') }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">SOIL</span>
+                            <span class="detail-label">pH Range</span>
+                            <span class="detail-value">{{ crop.details.get('ph_range', 'N/A') }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">SEASON</span>
+                            <span class="detail-label">Growing Season</span>
+                            <span class="detail-value">{{ crop.details.get('growing_season', 'N/A') }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">DAYS</span>
+                            <span class="detail-label">Duration</span>
+                            <span class="detail-value">{{ crop.details.get('duration_days', 'N/A') }} days</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">AREA</span>
+                            <span class="detail-label">Recommended</span>
+                            <span class="detail-value">{{ crop.details.get('area_required', 'N/A') }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Varieties -->
+                    {% if crop.details.get('varieties') %}
+                    <div class="crop-varieties">
+                        <h5>Recommended Varieties</h5>
+                        <div class="variety-tags">
+                            {% for variety in crop.details.varieties %}
+                            <span class="variety-tag">{{ variety }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- States -->
+                    {% if crop.details.get('major_districts') %}
+                    <div class="crop-districts">
+                        <h5>Major Growing States</h5>
+                        <p class="districts-list">{{ crop.details.major_districts | join(', ') }}</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- NPK Requirement -->
+                    <div class="npk-section">
+                        <h5>NPK Requirement (kg/ha)</h5>
+                        <div class="npk-bars">
+                            <div class="npk-item">
+                                <span>N</span>
+                                <div class="npk-bar"><div class="npk-fill n-fill" style="width: {{ (crop.details.get('nitrogen', 0) / 150 * 100) | int }}%"></div></div>
+                                <span>{{ crop.details.get('nitrogen', 0) }}</span>
+                            </div>
+                            <div class="npk-item">
+                                <span>P</span>
+                                <div class="npk-bar"><div class="npk-fill p-fill" style="width: {{ (crop.details.get('phosphorus', 0) / 150 * 100) | int }}%"></div></div>
+                                <span>{{ crop.details.get('phosphorus', 0) }}</span>
+                            </div>
+                            <div class="npk-item">
+                                <span>K</span>
+                                <div class="npk-bar"><div class="npk-fill k-fill" style="width: {{ (crop.details.get('potassium', 0) / 150 * 100) | int }}%"></div></div>
+                                <span>{{ crop.details.get('potassium', 0) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <div class="action-section">
+            <a href="/" class="action-btn primary">Analyze Another Soil</a>
+            <button onclick="window.print()" class="action-btn secondary">Print Report</button>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-info-box">
+            <p class="footer-title">AgriSense India — Crop Recommendation System</p>
+            <p class="footer-sub">Data sourced from ICAR, State Agricultural Universities & Government of India Reports</p>
+        </div>
+        
+        <div class="developer-profile">
+            <h4><span style="color:var(--w50);font-size:0.85rem;font-weight:600;letter-spacing:0.5px;">Developed by</span><br>Rajhavel V S</h4>
+            <p>Computer Science (AI & ML) Scholar at Karunya Institute of Technology and Sciences. President of ACM Student Chapter and AI Researcher focusing on impactful machine learning applications in healthcare and agriculture.</p>
+            <a href="https://www.linkedin.com/in/rajhavelvs/" target="_blank" rel="noopener noreferrer" class="dev-link">Connect on LinkedIn</a>
+        </div>
+    </footer>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.crop-card, .prop-card, .soil-card').forEach(el => observer.observe(el));
+        setTimeout(() => {
+            document.querySelector('.confidence-fill').style.transition = 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        }, 300);
+    </script>
+</body>
+</html>
