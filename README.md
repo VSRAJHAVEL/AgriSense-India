@@ -1,3 +1,12 @@
+---
+title: AgriSense India
+emoji: 🌾
+colorFrom: green
+colorTo: blue
+sdk: docker
+pinned: false
+---
+
 # AgriSense India - Crop Recommendation System
 
 AgriSense India is an AI-powered agricultural intelligence platform designed to assist farmers and agricultural stakeholders in making data-driven decisions. By analyzing soil images and integrating market intelligence, the system provides precise crop recommendations tailored to specific soil types and environmental conditions.
