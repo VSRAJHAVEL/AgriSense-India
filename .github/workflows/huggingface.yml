@@ -14,9 +14,14 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install huggingface_hub
+        run: pip install huggingface_hub
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git remote add space https://user:${HF_TOKEN}@huggingface.co/spaces/VSRAJHAVEL/AgriSense-India
-          git push --force space master:main
+          huggingface-cli upload VSRAJHAVEL/AgriSense-India . . --repo-type space
