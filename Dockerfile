@@ -1,17 +1,22 @@
 FROM python:3.12-slim
 
+# Create a non-root user with UID 1000 as required by Hugging Face Spaces
+RUN useradd -m -u 1000 user
+USER user
+ENV PATH="/home/user/.local/bin:$PATH"
+
 # Set the working directory
 WORKDIR /app
 
 # Install dependencies
-COPY requirements.txt .
+COPY --chown=user ./requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Create uploads directory
-RUN mkdir -p static/uploads
-
 # Copy the rest of the application code
-COPY . .
+COPY --chown=user . /app
+
+# Create uploads directory and ensure user has permissions
+RUN mkdir -p /app/static/uploads
 
 # Expose port 7860 for Hugging Face Spaces
 EXPOSE 7860
