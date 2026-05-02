@@ -17,4 +17,6 @@ jobs:
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push --force https://VSRAJHAVEL:$HF_TOKEN@huggingface.co/spaces/VSRAJHAVEL/AgriSense-India master:main
+        run: |
+          git remote add space https://user:${HF_TOKEN}@huggingface.co/spaces/VSRAJHAVEL/AgriSense-India
+          git push --force space master:main
