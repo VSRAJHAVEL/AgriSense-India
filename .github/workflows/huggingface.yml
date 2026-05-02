@@ -24,4 +24,4 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          huggingface-cli upload VSRAJHAVEL/AgriSense-India . . --repo-type space
+          hf upload VSRAJHAVEL/AgriSense-India . . --repo-type space
